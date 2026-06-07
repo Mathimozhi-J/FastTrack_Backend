@@ -16,6 +16,10 @@ const UserSchema = new mongoose.Schema({
         of: Boolean,
         default: {}
     },
+    addresses: {
+        type: Array,
+        default: []
+    },
     isActive: { type: Boolean, default: true },
     createdAt: { type: Date, default: Date.now }
 });

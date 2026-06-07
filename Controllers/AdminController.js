@@ -58,23 +58,21 @@ const deleteProduct = async (req, res) => {
     } catch (e) { res.status(500).json({ message: e.message }); }
 };
 
-// ── Orders ─────────────────────────────────────────────
+// ── Orders ────────────────────────────────────────────
 const getAllOrders = async (req, res) => {
     try {
         const orders = await Order.find({}).sort({ createdAt: -1 });
-        res.json({ data: orders });
+        res.json({ message: "Orders retrieved", data: orders });
     } catch (e) { res.status(500).json({ message: e.message }); }
 };
 
 const updateOrderStatus = async (req, res) => {
     try {
-        const order = await Order.findOneAndUpdate(
-            { orderId: req.params.id },
-            { status: req.body.status },
-            { new: true }
-        );
+        const order = await Order.findById(req.params.id);
         if (!order) return res.status(404).json({ message: "Order not found" });
-        res.json({ message: "Order updated", data: order });
+        order.status = req.body?.status || order.status;
+        await order.save();
+        res.json({ message: "Status updated", data: order });
     } catch (e) { res.status(500).json({ message: e.message }); }
 };
 
@@ -83,13 +81,8 @@ const getStats = async (req, res) => {
     try {
         const totalUsers    = await User.countDocuments();
         const totalProducts = await Product.countDocuments();
-        const totalOrders   = await Order.countDocuments();
-        const delivered     = await Order.countDocuments({ status: "Delivered" });
-        const revenueData   = await Order.aggregate([{ $group: { _id: null, total: { $sum: "$total" } } }]);
-        const totalRevenue  = revenueData[0]?.total || 0;
         const usersByRole   = await User.aggregate([{ $group: { _id: "$role", count: { $sum: 1 } } }]);
-        const ordersByStatus = await Order.aggregate([{ $group: { _id: "$status", count: { $sum: 1 } } }]);
-        res.json({ data: { totalUsers, totalProducts, totalOrders, delivered, totalRevenue, usersByRole, ordersByStatus } });
+        res.json({ data: { totalUsers, totalProducts, usersByRole } });
     } catch (e) { res.status(500).json({ message: e.message }); }
 };
 

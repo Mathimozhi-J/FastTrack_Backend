@@ -1,9 +1,11 @@
 const express = require("express");
-const router  = express.Router();
-const { createOrder, getUserOrders, cancelOrder } = require("../Controllers/OrderController");
+const router = express.Router();
+const orderController = require("../Controllers/OrderController");
 
-router.post("/",                createOrder);
-router.get("/user/:email",      getUserOrders);
-router.put("/cancel/:id",       cancelOrder);
+router.get("/", orderController);
+router.get("/:id", orderController);
+router.post("/", orderController);
+router.put("/:id/status", orderController);
+router.post("/:id/reorder", orderController);
 
 module.exports = router;
