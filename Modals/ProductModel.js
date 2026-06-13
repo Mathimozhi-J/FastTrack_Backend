@@ -11,6 +11,9 @@ const ProductSchema = new mongoose.Schema({
     image:         { type: String },
     description:   { type: String },
     isActive:      { type: Boolean, default: true },
+    isPublished:   { type: Boolean, default: true, index: true },
+    createdBy:     { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    updatedBy:     { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     createdAt:     { type: Date, default: Date.now }
 });
 
